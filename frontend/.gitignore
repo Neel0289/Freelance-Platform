@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+backend/config/firebase-service-account.json
+backend/.env
+frontend/.env
+__pycache__/
+*.pyc
