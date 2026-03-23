@@ -10,6 +10,7 @@ import PortalLayout from './components/layout/PortalLayout';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // Dashboard Pages
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -81,6 +82,7 @@ function App() {
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="reset-password-confirm/:uid/:token" element={<ResetPasswordPage />} />
             </Route>
 
             {/* Dashboard Routes (Freelancer only) */}

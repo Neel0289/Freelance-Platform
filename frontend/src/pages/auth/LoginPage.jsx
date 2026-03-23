@@ -6,11 +6,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { authApi } from '../../api/auth';
+import { getGoogleAuthErrorMessage } from '../../utils/googleAuthErrors';
 
 const loginSchema = z.object({
     username: z.string().min(3, 'Username must be at least 3 characters'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
 });
+
+import { signInWithGoogle } from '../../utils/firebase';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -26,6 +29,22 @@ export default function LoginPage() {
     } = useForm({
         resolver: zodResolver(loginSchema),
     });
+
+    const onGoogleLogin = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const { idToken } = await signInWithGoogle();
+            const user = await authApi.firebaseLogin(idToken, 'FREELANCER');
+            login(user);
+            navigate(user.role === 'FREELANCER' ? '/dashboard' : '/portal');
+        } catch (err) {
+            console.error(err);
+            setError(getGoogleAuthErrorMessage(err));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const onSubmit = async (data) => {
         setIsLoading(true);
@@ -138,6 +157,8 @@ export default function LoginPage() {
 
             <button
                 type="button"
+                onClick={onGoogleLogin}
+                disabled={isLoading}
                 className="w-full h-10 px-4 py-2 border border-border bg-card hover:bg-muted text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2"
             >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">

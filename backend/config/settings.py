@@ -110,7 +110,7 @@ SITE_ID = 1
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'apps.users.authentication.CsrfExemptSessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -134,6 +134,9 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     os.getenv('FRONTEND_URL', 'http://localhost:5173'),
 ]
+CSRF_COOKIE_HTTPONLY = False  # Allow frontend to read the cookie
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False    # Change to True in production with HTTPS
 
 # Session
 SESSION_COOKIE_HTTPONLY = True
@@ -174,6 +177,9 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@freelancercrm.com')
+
+# Password Reset
+PASSWORD_RESET_CONFIRM_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173') + "/auth/reset-password-confirm/{{uid}}/{{token}}/"
 
 # Celery
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')

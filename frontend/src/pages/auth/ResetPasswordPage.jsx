@@ -2,18 +2,23 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
-
-const forgotPasswordSchema = z.object({
-    email: z.string().email('Invalid email address'),
-});
-
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Lock, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { authApi } from '../../api/auth';
 
-export default function ForgotPasswordPage() {
+const resetPasswordSchema = z.object({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+});
+
+export default function ResetPasswordPage() {
+    const { uid, token } = useParams();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState(null);
 
     const {
@@ -21,40 +26,39 @@ export default function ForgotPasswordPage() {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(forgotPasswordSchema),
+        resolver: zodResolver(resetPasswordSchema),
     });
 
     const onSubmit = async (data) => {
         setIsLoading(true);
         setError(null);
         try {
-            await authApi.forgotPassword(data.email);
-            setIsSubmitted(true);
+            await authApi.resetPasswordConfirm(uid, token, data.password);
+            setIsSuccess(true);
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.detail || 'Failed to send reset email. Please try again.');
+            setError(err.response?.data?.detail || 'Failed to reset password. The link may have expired.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (isSubmitted) {
+    if (isSuccess) {
         return (
             <div className="text-center space-y-6">
                 <div className="flex justify-center">
                     <CheckCircle2 className="h-12 w-12 text-primary" />
                 </div>
                 <div className="space-y-2">
-                    <h2 className="text-xl font-semibold tracking-tight">Check your email</h2>
+                    <h2 className="text-xl font-semibold tracking-tight">Password Reset Successfully</h2>
                     <p className="text-sm text-muted-foreground">
-                        We've sent a password reset link to your email address.
+                        Your password has been updated. You can now log in with your new password.
                     </p>
                 </div>
                 <Link
                     to="/auth/login"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                    className="w-full inline-flex items-center justify-center h-10 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium transition-colors hover:bg-primary/90"
                 >
-                    <ArrowLeft className="h-4 w-4" />
                     Back to login
                 </Link>
             </div>
@@ -64,9 +68,9 @@ export default function ForgotPasswordPage() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <h2 className="text-xl font-semibold tracking-tight">Forgot password?</h2>
+                <h2 className="text-xl font-semibold tracking-tight">Reset your password</h2>
                 <p className="text-sm text-muted-foreground">
-                    Enter your email and we'll send you a link to reset your password.
+                    Enter your new password below.
                 </p>
             </div>
 
@@ -78,24 +82,42 @@ export default function ForgotPasswordPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-1">
-                    <label className="text-sm font-medium" htmlFor="email">
-                        Email address
+                    <label className="text-sm font-medium" htmlFor="password">
+                        New Password
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-                            <Mail className="h-4 w-4" />
+                            <Lock className="h-4 w-4" />
                         </div>
                         <input
-                            {...register('email')}
-                            id="email"
-                            type="email"
+                            {...register('password')}
+                            id="password"
+                            type="password"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="john@example.com"
-                            autoComplete="email"
                         />
                     </div>
-                    {errors.email && (
-                        <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+                    {errors.password && (
+                        <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
+                    )}
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-sm font-medium" htmlFor="confirmPassword">
+                        Confirm New Password
+                    </label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                            <Lock className="h-4 w-4" />
+                        </div>
+                        <input
+                            {...register('confirmPassword')}
+                            id="confirmPassword"
+                            type="password"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                    </div>
+                    {errors.confirmPassword && (
+                        <p className="text-xs text-destructive mt-1">{errors.confirmPassword.message}</p>
                     )}
                 </div>
 
@@ -105,7 +127,7 @@ export default function ForgotPasswordPage() {
                     className="w-full h-10 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
                 >
                     {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    Send reset link
+                    Reset Password
                 </button>
             </form>
 

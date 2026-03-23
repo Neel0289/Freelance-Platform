@@ -23,7 +23,11 @@ function getCsrfCookie() {
 api.interceptors.request.use(async (config) => {
     const method = config.method?.toLowerCase();
     if (['post', 'put', 'patch', 'delete'].includes(method) && !getCsrfCookie()) {
-        await axios.get('http://localhost:8000/api/csrf/', { withCredentials: true });
+        try {
+            await api.get('/csrf/');
+        } catch (error) {
+            console.error('Failed to fetch CSRF token:', error);
+        }
     }
     return config;
 });

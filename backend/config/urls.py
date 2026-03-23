@@ -4,6 +4,9 @@ from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
+from django.views.generic import RedirectView
+from django.conf import settings
+
 @require_GET
 def csrf_view(request):
     return JsonResponse({'csrfToken': get_token(request)})
@@ -11,6 +14,10 @@ def csrf_view(request):
 urlpatterns = [
     path('api/csrf/', csrf_view),
     path('admin/', admin.site.urls),
+    # Redirect backend password reset link to frontend
+    path('password-reset-confirm/<uidb64>/<token>/', 
+         RedirectView.as_view(url=settings.FRONTEND_URL + '/auth/reset-password-confirm/%(uidb64)s/%(token)s/'), 
+         name='password_reset_confirm'),
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', include('apps.users.urls')),
