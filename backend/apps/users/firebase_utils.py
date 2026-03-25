@@ -33,7 +33,7 @@ def verify_firebase_token(id_token):
         raise RuntimeError(FIREBASE_INIT_ERROR)
 
     try:
-        return auth.verify_id_token(id_token)
+        return auth.verify_id_token(id_token, clock_skew_seconds=60)
     except Exception as exc:
         raise ValueError(f'Invalid Firebase token: {exc}') from exc
 

@@ -1,10 +1,14 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
 export default function AuthLayout() {
     const { isAuthenticated, user } = useAuthStore();
+    const location = useLocation();
 
-    if (isAuthenticated && user) {
+    // Allow password reset confirm page even if logged in
+    const isResetConfirm = location.pathname.includes('reset-password-confirm');
+
+    if (isAuthenticated && user && !isResetConfirm) {
         return <Navigate to={user.role === 'FREELANCER' ? '/dashboard' : '/portal'} replace />;
     }
 

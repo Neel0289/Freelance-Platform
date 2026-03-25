@@ -55,16 +55,20 @@ class Invoice(models.Model):
         super().save(*args, **kwargs)
 
     def generate_invoice_number(self):
+        prefix = f"INV-{self.freelancer.id}"
         last_invoice = Invoice.objects.filter(
             freelancer=self.freelancer
         ).order_by('-id').first()
-        if last_invoice and last_invoice.invoice_number.startswith('INV-'):
+        
+        if last_invoice:
             try:
-                last_num = int(last_invoice.invoice_number.split('-')[1])
-                return f"INV-{str(last_num + 1).zfill(4)}"
+                # Extract the last part of the invoice number (e.g., '0001' from 'INV-2-0001' or 'INV-0001')
+                last_num = int(last_invoice.invoice_number.split('-')[-1])
+                return f"{prefix}-{str(last_num + 1).zfill(4)}"
             except (ValueError, IndexError):
                 pass
-        return "INV-0001"
+                
+        return f"{prefix}-0001"
 
     def calculate_totals(self):
         if self.pk:

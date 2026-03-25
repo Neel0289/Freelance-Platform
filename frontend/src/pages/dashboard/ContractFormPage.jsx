@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -29,6 +29,7 @@ export default function ContractFormPage() {
     const { id } = useParams();
     const isEdit = !!id;
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const queryClient = useQueryClient();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,6 +52,19 @@ export default function ContractFormPage() {
             content: `This Independent Contractor Agreement ("Agreement") is made and entered into as of the date signed, between the Freelancer and the Client.\n\n1. SERVICES PROVIDED\nFreelancer agrees to perform the following services for Client...\n\n2. PAYMENT TERMS\nClient shall pay freelancer as follows...\n\n3. INTELLECTUAL PROPERTY\nAll work product created by Freelancer under this Agreement shall belong to Client upon full payment...\n\n4. CONFIDENTIALITY\nBoth parties agree to keep all project information confidential...`,
         },
     });
+
+    useEffect(() => {
+        if (!isEdit) {
+            const clientId = searchParams.get('client');
+            const projectId = searchParams.get('project');
+            if (clientId || projectId) {
+                reset({
+                    client: clientId ? parseInt(clientId) : undefined,
+                    project: projectId ? parseInt(projectId) : undefined,
+                });
+            }
+        }
+    }, [isEdit, searchParams, reset]);
 
     useEffect(() => {
         if (contract) {

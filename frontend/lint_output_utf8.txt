@@ -1,0 +1,17 @@
+﻿
+D:\Codes\Hetsethcollab\frontend\src\pages\dashboard\ProjectDetailPage.jsx
+   2:21  error  'Link' is defined but never used          no-unused-vars
+   6:5   error  'ArrowLeft' is defined but never used     no-unused-vars
+   7:5   error  'Clock' is defined but never used         no-unused-vars
+   8:5   error  'Plus' is defined but never used          no-unused-vars
+   9:5   error  'Calendar' is defined but never used      no-unused-vars
+  10:5   error  'DollarSign' is defined but never used    no-unused-vars
+  11:5   error  'Briefcase' is defined but never used     no-unused-vars
+  12:5   error  'CheckCircle2' is defined but never used  no-unused-vars
+  13:5   error  'Trash2' is defined but never used        no-unused-vars
+  14:5   error  'History' is defined but never used       no-unused-vars
+  15:5   error  'Pencil' is defined but never used        no-unused-vars
+  16:5   error  'FileText' is defined but never used      no-unused-vars
+
+Γ£û 12 problems (12 errors, 0 warnings)
+

@@ -32,6 +32,7 @@ export default function ProjectsPage() {
         ACTIVE: "bg-[#3B82F61A] text-[#3B82F6] border-[#3B82F633]",
         COMPLETED: "bg-[#22C55E1A] text-[#22C55E] border-[#22C55E33]",
         PAUSED: "bg-[#F59E0B1A] text-[#F59E0B] border-[#F59E0B33]",
+        ACCEPTED: "bg-[#7C3AED1A] text-[#7C3AED] border-[#7C3AED33]",
         ARCHIVED: "bg-[#1A1A1A] text-[#555555] border-[#222222]",
     };
 
@@ -67,7 +68,7 @@ export default function ProjectsPage() {
                     />
                 </div>
                 <div className="flex p-1 bg-[#111111] border border-[#222222] rounded-lg overflow-x-auto whitespace-nowrap scrollbar-none">
-                    {['ALL', 'ACTIVE', 'PAUSED', 'COMPLETED', 'ARCHIVED'].map((status) => (
+                    {['ALL', 'ACCEPTED', 'ACTIVE', 'PAUSED', 'COMPLETED', 'ARCHIVED'].map((status) => (
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}

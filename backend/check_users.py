@@ -1,17 +1,14 @@
 import os
 import django
-from django.contrib.auth import get_user_model
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-User = get_user_model()
+from apps.users.models import User
 
-def check_users():
-    users = User.objects.all()
-    print(f"Total users: {users.count()}")
-    for user in users:
-        print(f"User: {user.username}, Email: {user.email}, Is Active: {user.is_active}")
+print(f"Total Users: {User.objects.count()}")
+print(f"Freelancers: {User.objects.filter(role=User.Role.FREELANCER).count()}")
+print(f"Clients: {User.objects.filter(role=User.Role.CLIENT).count()}")
 
-if __name__ == "__main__":
-    check_users()
+for user in User.objects.all():
+    print(f"ID: {user.id}, Username: {user.username}, Role: {user.role}, Email: {user.email}")

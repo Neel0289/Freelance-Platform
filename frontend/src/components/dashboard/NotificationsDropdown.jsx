@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { notificationsApi } from '../../api/notifications';
-import { Bell, Check, Clock, Info } from 'lucide-react';
+import { Bell, Check, Clock, Info, Briefcase, FileText } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 export default function NotificationsDropdown() {
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const { data: notifications = [] } = useQuery({
+    const { data: notificationsData } = useQuery({
         queryKey: ['notifications'],
         queryFn: () => notificationsApi.list(),
         refetchInterval: 30000, // Refetch every 30 seconds
     });
+    
+    const notifications = notificationsData?.results || [];
 
     const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -29,6 +33,17 @@ export default function NotificationsDropdown() {
             queryClient.invalidateQueries({ queryKey: ['notifications'] });
         },
     });
+
+    const handleNotificationClick = (n) => {
+        if (!n.is_read) {
+            markReadMutation.mutate(n.id);
+        }
+        
+        if (n.type === 'WORK_REQUEST' && n.data?.work_request_id) {
+            navigate(`/dashboard?request=${n.data.work_request_id}`);
+            setIsOpen(false);
+        }
+    };
 
     return (
         <div className="relative">
@@ -68,8 +83,9 @@ export default function NotificationsDropdown() {
                                 notifications.map((n) => (
                                     <div
                                         key={n.id}
+                                        onClick={() => handleNotificationClick(n)}
                                         className={cn(
-                                            "p-4 flex gap-3 transition-colors hover:bg-muted/50 relative group",
+                                            "p-4 flex gap-3 transition-colors hover:bg-muted/50 cursor-pointer relative group",
                                             !n.is_read && "bg-primary/5"
                                         )}
                                     >
@@ -77,9 +93,11 @@ export default function NotificationsDropdown() {
                                             {n.type === 'PAYMENT' ? (
                                                 <Check className="w-4 h-4 text-green-600" />
                                             ) : n.type === 'INVOICE' ? (
-                                                <Check className="w-4 h-4 text-blue-600" />
+                                                <FileText className="w-4 h-4 text-blue-600" />
+                                            ) : n.type === 'WORK_REQUEST' ? (
+                                                <Briefcase className="w-4 h-4 text-primary" />
                                             ) : (
-                                                <Check className="w-4 h-4 text-primary" />
+                                                <Info className="w-4 h-4 text-primary" />
                                             )}
                                         </div>
                                         <div className="flex-1 space-y-1">

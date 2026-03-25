@@ -8,6 +8,7 @@ class Project(models.Model):
         PAUSED = 'PAUSED', 'Paused'
         COMPLETED = 'COMPLETED', 'Completed'
         ARCHIVED = 'ARCHIVED', 'Archived'
+        ACCEPTED = 'ACCEPTED', 'Accepted'
 
     freelancer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -58,3 +59,53 @@ class TimeEntry(models.Model):
 
     def __str__(self):
         return f"{self.description} - {self.hours}h"
+
+
+class WorkRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        ACCEPTED = 'ACCEPTED', 'Accepted'
+        DECLINED = 'DECLINED', 'Declined'
+        PROPOSED = 'PROPOSED', 'Proposed'
+        COMPLETED = 'COMPLETED', 'Completed'
+
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sent_work_requests'
+    )
+    freelancer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='incoming_work_requests'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    deadline = models.DateField(null=True, blank=True)
+    budget = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.status})"
+
+
+class WorkRequestAttachment(models.Model):
+    work_request = models.ForeignKey(
+        WorkRequest,
+        on_delete=models.CASCADE,
+        related_name='attachments'
+    )
+    file = models.FileField(upload_to='work_requests/')
+    filename = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.filename

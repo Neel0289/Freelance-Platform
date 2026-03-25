@@ -1,0 +1,8 @@
+﻿Total Users: 7
+ID: 1, Username: neel, Role: FREELANCER, IsSuperuser: False
+ID: 2, Username: legend04433, Role: FREELANCER, IsSuperuser: False
+ID: 3, Username: john, Role: FREELANCER, IsSuperuser: False
+ID: 4, Username: googletest1774251518, Role: FREELANCER, IsSuperuser: False
+ID: 5, Username: googletest1774251518-1, Role: FREELANCER, IsSuperuser: False
+ID: 6, Username: client_test, Role: CLIENT, IsSuperuser: False
+ID: 8, Username: Divish_Gupta, Role: CLIENT, IsSuperuser: False

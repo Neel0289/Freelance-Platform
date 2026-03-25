@@ -19,7 +19,7 @@ export default function ContractSignPage() {
 
     const { data: contract, isLoading, isError } = useQuery({
         queryKey: ['contract-sign', token],
-        queryFn: () => contractsApi.get(0),
+        queryFn: () => contractsApi.getPublic(token),
         enabled: !!token,
         retry: false,
     });

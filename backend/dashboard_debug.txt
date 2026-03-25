@@ -1,0 +1,6 @@
+User: client@test.com
+Projects: 0, Active: 0
+Invoices: 0, Pending: 0, Amount: 0
+Contracts: 0
+Signed: 0
+Pending: 0

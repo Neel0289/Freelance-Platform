@@ -17,8 +17,13 @@ class ContractViewSet(viewsets.ModelViewSet):
     filterset_fields = ['status', 'client']
 
     def get_queryset(self):
+        user = self.request.user
+        if user.role == 'CLIENT':
+            return Contract.objects.filter(
+                client__email=user.email
+            ).select_related('client', 'project', 'freelancer')
         return Contract.objects.filter(
-            freelancer=self.request.user
+            freelancer=user
         ).select_related('client', 'project')
 
     def perform_create(self, serializer):

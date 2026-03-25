@@ -1,0 +1,19 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [Freelancer CRM] Password Reset Email
+From: hetmungara107@gmail.com
+To: neel9086@gmail.com
+Date: Mon, 23 Mar 2026 10:45:31 -0000
+Message-ID: <177426273193.22420.10791062248232957267@LAPTOP-TVNQGB5N>
+
+Hello from Freelancer CRM!
+
+You're receiving this email because you or someone else has requested a password reset for your user account.
+It can be safely ignored if you did not request a password reset. Click the link below to reset your password.
+
+http://testserver/password-reset-confirm/1/d5wihv-ecf11a885b854717da34d1ad08f09f8b/
+
+Thank you for using Freelancer CRM!
+localhost:8000
+-------------------------------------------------------------------------------

@@ -11,21 +11,26 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from apps.users.permissions import IsOwner
+from apps.users.permissions import IsOwner, IsParticipant
 from .models import Invoice
 from .serializers import InvoiceSerializer
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
     serializer_class = InvoiceSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsParticipant]
     search_fields = ['invoice_number', 'client__name']
     ordering_fields = ['invoice_number', 'created_at', 'due_date', 'total']
     filterset_fields = ['status', 'client', 'project']
 
     def get_queryset(self):
+        user = self.request.user
+        if user.role == 'CLIENT':
+            return Invoice.objects.filter(
+                client__email__iexact=user.email
+            ).select_related('client', 'project').prefetch_related('items')
         return Invoice.objects.filter(
-            freelancer=self.request.user
+            freelancer=user
         ).select_related('client', 'project').prefetch_related('items')
 
     def perform_create(self, serializer):

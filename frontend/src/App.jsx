@@ -28,10 +28,14 @@ import ContractDetailPage from './pages/dashboard/ContractDetailPage';
 import ContractFormPage from './pages/dashboard/ContractFormPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 
+import MyRequestsPage from './pages/portal/MyRequestsPage';
+
 // Portal Pages
 import PortalDashboardPage from './pages/portal/PortalDashboardPage';
 import PaymentPage from './pages/portal/PaymentPage';
 import ContractSignPage from './pages/portal/ContractSignPage';
+import FreelancerListingPage from './pages/freelancers/FreelancerListingPage';
+import FreelancerProfilePage from './pages/freelancers/FreelancerProfilePage';
 
 // Temporary placeholder components for other sections
 const Placeholder = ({ title }) => (
@@ -110,8 +114,11 @@ function App() {
             {/* Client Portal Routes */}
             <Route path="/portal" element={<PortalLayout />}>
                 <Route index element={<PortalDashboardPage />} />
+                <Route path="freelancers" element={<FreelancerListingPage />} />
+                <Route path="freelancers/:id" element={<FreelancerProfilePage />} />
                 <Route path=":id/pay" element={<PaymentPage />} />
                 <Route path="contracts/sign/:token" element={<ContractSignPage />} />
+                <Route path="requests" element={<MyRequestsPage />} />
             </Route>
 
             {/* 404 */}

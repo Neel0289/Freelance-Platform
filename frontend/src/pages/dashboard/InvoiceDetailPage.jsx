@@ -61,7 +61,13 @@ export default function InvoiceDetailPage() {
         try {
             const blob = await invoicesApi.downloadPdf(invoiceId);
             const url = window.URL.createObjectURL(blob);
-            window.open(url);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `invoice_${invoice.invoice_number}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (err) {
             alert('Failed to download PDF');
         }

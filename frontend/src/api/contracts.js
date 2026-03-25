@@ -31,5 +31,10 @@ export const contractsApi = {
 
     sign: async (token, signatureData) => {
         await api.post(`/contracts/sign/${token}/`, signatureData);
+    },
+
+    getPublic: async (token) => {
+        const { data } = await api.get(`/contracts/sign/${token}/`);
+        return data;
     }
 };

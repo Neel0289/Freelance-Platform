@@ -15,7 +15,47 @@ def dashboard_stats(request):
     user = request.user
     today = timezone.now().date()
 
-    # Counts
+    if user.role == 'CLIENT':
+        # Client specific stats
+        projects = Project.objects.filter(
+            client__email__iexact=user.email, deleted_at__isnull=True
+        )
+        active_projects_count = projects.filter(status='ACTIVE').count()
+        
+        invoices = Invoice.objects.filter(client__email__iexact=user.email)
+        pending_invoices_count = invoices.filter(status__in=['SENT', 'OVERDUE']).count()
+        pending_amount = invoices.filter(
+            status__in=['SENT', 'OVERDUE']
+        ).aggregate(total=Sum('total'))['total'] or 0
+        
+        from apps.contracts.models import Contract
+        contracts = Contract.objects.filter(client__email__iexact=user.email)
+        signed_contracts_count = contracts.filter(status='SIGNED').count()
+        pending_contracts_count = contracts.filter(status='SENT').count()
+
+        recent_invoices = invoices.select_related('freelancer').order_by('-created_at')[:5]
+        recent_invoices_data = [
+            {
+                'id': inv.id,
+                'invoice_number': inv.invoice_number,
+                'freelancer_name': inv.freelancer.get_full_name() or inv.freelancer.email,
+                'total': float(inv.total),
+                'status': inv.status,
+                'due_date': inv.due_date,
+            }
+            for inv in recent_invoices
+        ]
+
+        return Response({
+            'active_projects': active_projects_count,
+            'pending_invoices': pending_invoices_count,
+            'pending_amount': float(pending_amount),
+            'signed_contracts': signed_contracts_count,
+            'pending_contracts': pending_contracts_count,
+            'recent_invoices': recent_invoices_data,
+        })
+
+    # Freelancer specific stats (original logic)
     total_clients = Client.objects.filter(
         freelancer=user, deleted_at__isnull=True
     ).count()
@@ -35,7 +75,7 @@ def dashboard_stats(request):
         status__in=['SENT', 'OVERDUE']
     ).aggregate(total=Sum('total'))['total'] or 0
 
-    # Monthly revenue for chart (last 12 months)
+    # Monthly revenue for chart... (omitted for brevity in ReplacementContent if possible, but I'll include it to be safe)
     monthly_revenue = []
     for i in range(11, -1, -1):
         month_start = today.replace(day=1)
@@ -57,7 +97,6 @@ def dashboard_stats(request):
             'revenue': float(revenue),
         })
 
-    # Recent invoices
     recent_invoices = invoices.select_related('client').order_by('-created_at')[:5]
     recent_invoices_data = [
         {
@@ -71,6 +110,11 @@ def dashboard_stats(request):
         for inv in recent_invoices
     ]
 
+    from apps.contracts.models import Contract
+    contracts = Contract.objects.filter(freelancer=user)
+    signed_contracts_count = contracts.filter(status='SIGNED').count()
+    pending_contracts_count = contracts.filter(status='SENT').count()
+
     return Response({
         'total_clients': total_clients,
         'active_projects': active_projects,
@@ -78,6 +122,8 @@ def dashboard_stats(request):
         'pending_invoices': pending_invoices,
         'overdue_invoices': overdue_invoices,
         'pending_amount': float(pending_amount),
+        'signed_contracts': signed_contracts_count,
+        'pending_contracts': pending_contracts_count,
         'monthly_revenue': monthly_revenue,
         'recent_invoices': recent_invoices_data,
     })

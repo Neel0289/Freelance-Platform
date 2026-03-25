@@ -96,7 +96,14 @@ export default function ProjectFormPage() {
 
     const onSubmit = (data) => {
         setIsSubmitting(true);
-        mutation.mutate(data);
+        // Clean up data: convert empty strings to null for dates and budget
+        const cleanedData = {
+            ...data,
+            start_date: data.start_date || null,
+            due_date: data.due_date || null,
+            budget: data.budget === '' ? null : data.budget,
+        };
+        mutation.mutate(cleanedData);
     };
 
     const clients = clientsData?.results || [];

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -43,6 +43,7 @@ export default function InvoiceFormPage() {
     const { id } = useParams();
     const isEdit = !!id;
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const queryClient = useQueryClient();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,6 +71,25 @@ export default function InvoiceFormPage() {
             due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         },
     });
+
+    useEffect(() => {
+        if (!isEdit) {
+            const clientId = searchParams.get('client');
+            const projectId = searchParams.get('project');
+            const amount = searchParams.get('amount');
+            
+            if (clientId || projectId || amount) {
+                reset({
+                    client: clientId ? parseInt(clientId) : undefined,
+                    project: projectId ? parseInt(projectId) : undefined,
+                    items: amount ? [{ description: 'Project Work', quantity: 1, unit_price: parseFloat(amount) }] : [{ description: '', quantity: 1, unit_price: 0 }],
+                    issue_date: new Date().toISOString().split('T')[0],
+                    due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    tax_rate: 0,
+                });
+            }
+        }
+    }, [isEdit, searchParams, reset]);
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -115,9 +135,11 @@ export default function InvoiceFormPage() {
             if (isEdit) queryClient.invalidateQueries({ queryKey: ['invoice', id] });
             navigate('/invoices');
         },
-        onError: () => {
+        onError: (error) => {
             setIsSubmitting(false);
-            alert('An error occurred. Please try again.');
+            const errorData = error?.response?.data || error.message;
+            console.error('Invoice Error:', errorData);
+            alert(`Error: ${JSON.stringify(errorData)}`);
         }
     });
 

@@ -32,7 +32,10 @@ export default function ForgotPasswordPage() {
             setIsSubmitted(true);
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.detail || 'Failed to send reset email. Please try again.');
+            const detail = err.response?.data?.detail;
+            const message = typeof detail === 'string' ? detail : 
+                           (err.response?.data?.email?.[0] || 'Failed to send reset email. Please try again.');
+            setError(message);
         } finally {
             setIsLoading(false);
         }

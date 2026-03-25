@@ -10,6 +10,7 @@ class Notification(models.Model):
     )
     type = models.CharField(max_length=50)
     message = models.TextField()
+    data = models.JSONField(default=dict, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

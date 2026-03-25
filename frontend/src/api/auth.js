@@ -40,4 +40,9 @@ export const authApi = {
         });
         return data;
     },
+    
+    changePassword: async (passwords) => {
+        const { data } = await api.post('/auth/password/change/', passwords);
+        return data;
+    },
 };

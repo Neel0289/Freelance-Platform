@@ -16,6 +16,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import ChangePasswordModal from '../../components/dashboard/ChangePasswordModal';
 
 const profileSchema = z.object({
     username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -28,6 +29,7 @@ export default function SettingsPage() {
     const { user } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [activeSection, setActiveSection] = useState('profile');
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
     const {
         register,
@@ -207,11 +209,14 @@ export default function SettingsPage() {
                                 <div className="p-3 bg-primary/10 w-fit mx-auto rounded-full text-primary">
                                     <Lock className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-xl font-bold">Security & Password</h3>
+                                <h3 className="text-xl font-bold text-white tracking-tight">Security & Password</h3>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Change your password or enable two-factor authentication for enhanced account protection.
                                 </p>
-                                <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm">
+                                <button 
+                                    onClick={() => setIsPasswordModalOpen(true)}
+                                    className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-black uppercase tracking-widest text-[10px] hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+                                >
                                     Change Password
                                 </button>
                             </div>
@@ -222,11 +227,11 @@ export default function SettingsPage() {
                                 <div className="p-3 bg-primary/10 w-fit mx-auto rounded-full text-primary">
                                     <Bell className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-xl font-bold">Manage Notifications</h3>
+                                <h3 className="text-xl font-bold text-white tracking-tight">Manage Notifications</h3>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Choose how you want to be notified about payments, contracts, and project updates.
                                 </p>
-                                <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm">
+                                <button className="px-6 py-2 bg-[#1A1A1A] text-[#F5F5F5] rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-[#222222] border border-[#222222] transition-all">
                                     Configure Preferences
                                 </button>
                             </div>
@@ -234,6 +239,11 @@ export default function SettingsPage() {
                     </div>
                 </div>
             </div>
+
+            <ChangePasswordModal 
+                isOpen={isPasswordModalOpen} 
+                onClose={() => setIsPasswordModalOpen(false)} 
+            />
         </div>
     );
 }

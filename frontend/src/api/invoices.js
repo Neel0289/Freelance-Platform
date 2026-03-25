@@ -39,7 +39,7 @@ export const invoicesApi = {
     },
 
     downloadPdf: async (id) => {
-        const { data } = await api.get(`/invoices/${id}/download_pdf/`, {
+        const { data } = await api.get(`/invoices/${id}/pdf/`, {
             responseType: 'blob'
         });
         return data;

@@ -9,7 +9,7 @@ import { authApi } from '../../api/auth';
 import { getGoogleAuthErrorMessage } from '../../utils/googleAuthErrors';
 
 const loginSchema = z.object({
-    username: z.string().min(3, 'Username must be at least 3 characters'),
+    username: z.string().min(3, 'Username or email must be at least 3 characters'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-1">
                     <label className="text-sm font-medium" htmlFor="username">
-                        Username
+                        Username or Email
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
@@ -90,7 +90,7 @@ export default function LoginPage() {
                             id="username"
                             type="text"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="your_username"
+                            placeholder="Username or email"
                             autoComplete="username"
                         />
                     </div>

@@ -1,14 +1,25 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from .models import User
+from .models import User, PortfolioItem
+
+
+class PortfolioItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PortfolioItem
+        fields = ['id', 'title', 'description', 'image', 'url', 'created_at']
 
 
 class UserSerializer(serializers.ModelSerializer):
+    portfolio_items = PortfolioItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'first_name', 'last_name',
-                  'role', 'avatar', 'phone', 'timezone']
-        read_only_fields = ['id', 'email']
+        fields = [
+            'id', 'email', 'username', 'first_name', 'last_name', 'role', 
+            'avatar', 'phone', 'timezone', 'title', 'bio', 'skills', 
+            'availability', 'rating', 'completed_jobs', 'portfolio_items'
+        ]
+        read_only_fields = ['id', 'email', 'rating', 'completed_jobs']
 
 
 class CustomRegisterSerializer(RegisterSerializer):
